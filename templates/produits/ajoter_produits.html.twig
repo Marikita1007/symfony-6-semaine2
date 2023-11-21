@@ -1,0 +1,18 @@
+{% extends "base.html.twig" %}
+
+{%  block title %}
+
+{% endblock %}
+
+{% block body %}
+{# 現在使ってないけどミカエル先生が作ってたドキュメントの内容   #}
+<div class="container w-50 shadow rounded mx-auto mt-5 p-3">
+    <h1 class="text-center text-warning">Ajouter de Produits</h1>
+    {{ form_start(form) }}
+
+    {{ form(form) }}
+
+    {{ form_end(form) }}
+</div>
+
+{% endblock %}
