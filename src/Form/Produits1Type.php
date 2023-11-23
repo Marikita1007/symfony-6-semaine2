@@ -11,15 +11,15 @@ class Produits1Type extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder
-            ->add('name')
-            ->add('description')
-            ->add('prix')
-            ->add('createdAt')
-            ->add('reference')
-            ->add('categorie')
-            ->add('distributeur')
-        ;
+//        $builder
+//            ->add('name')
+//            ->add('description')
+//            ->add('prix')
+//            ->add('createdAt')
+//            ->add('reference')
+//            ->add('categorie')
+//            ->add('distributeur')
+//        ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void

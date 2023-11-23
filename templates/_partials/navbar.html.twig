@@ -1,0 +1,24 @@
+<nav class="navbar navbar-expand-lg bg-dark mb-3" data-bs-theme="dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Symfony 6 Week 2</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarColor02">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('app_produits_index') }}">Products</a>
+                </li>
+            </ul>
+            <form class="d-flex">
+                {% if app.user %}
+                    <a href="{{ path('app_logout') }}" class="btn btn-danger me-1">Logout</a>
+                    <a href="{{ path('app_profile') }}" class="btn btn-secondary me-1">Profile</a>
+                    <a href="{{ path('app_produits_all_filters') }}" class="btn btn-secondary">Serach Products</a>
+                {% else %}
+                    <a href="{{ path('app_login') }}" class="btn btn-info mx-3">Login</a>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+</nav>

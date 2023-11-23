@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container-fluid">
+        <div class="row">
+
+            <!-- Left Sidebar for Filters -->
+            <div class="col-md-4">
+                <h1>Search Products by All Filters</h1>
+
+                {{ form_start(formFilterSearch) }}
+                {{ form_row(formFilterSearch.word) }}
+                {{ form_row(formFilterSearch.submit) }}
+                {{ form_end(formFilterSearch) }}
+
+                {{ form_start(formCategories) }}
+                {{ form_row(formCategories.name) }}
+                {{ form_row(formCategories.submit) }}
+                {{ form_end(formCategories) }}
+            </div>
+
+            <!-- Right Content for Products -->
+            <div class="col-md-8">
+                <h2 class="text-center">Produits</h2>
+                <div class="row">
+
+                    {% if produitsByWord is defined %}
+                        {% for produit in produitsByWord %}
+                            <div class="col-md-6 mb-6">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h3 class="card-title">{{ produit.name }}</h3>
+                                        <p class="card-text">Description : {{ produit.description }}</p>
+                                        <p class="card-text">Price : {{ produit.prix }} €</p>
+                                        <p class="card-text">Created Time : {{ produit.createdAt|date('Y-m-d H:i:s') }}</p>
+                                        <p class="card-text">Updated Time : {{ produit.updatedAt|date('Y-m-d H:i:s') }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    {% if produitsByCategory is defined %}
+                        {% for produit in produitsByCategory %}
+                            <div class="col-md-6 mb-6">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h3 class="card-title">{{ produit.name }}</h3>
+                                        <p class="card-text">Description :{{ produit.description }}</p>
+                                        <p class="card-text">Price : {{ produit.prix }} €</p>
+                                        <p class="card-text">Created Time : {{ produit.createdAt|date('Y-m-d H:i:s') }}</p>
+                                        <p class="card-text">Updated Time : {{ produit.updatedAt|date('Y-m-d H:i:s') }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

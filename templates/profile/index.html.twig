@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello ProfileController!{% endblock %}
+
+{% block body %}
+
+<div>
+    <h1>Welcome to your profile </h1>
+    <h2 class="text-success"> {{ app.user.email }}</h2>
+
+    {{ form_start(form) }}
+    {{ form(form) }}
+    {{ form_end(form) }}
+
+    <a href="" class="btn btn-primary">Edit your password</a>
+
+</div>
+{% endblock %}

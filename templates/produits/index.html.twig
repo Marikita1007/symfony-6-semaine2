@@ -1,9 +1,9 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Produits index{% endblock %}
+{% block title %}Produits Table{% endblock %}
 
 {% block body %}
-    <h1>Produits index</h1>
+    <h1>All Products</h1>
 
     <table class="table">
         <thead>
@@ -12,7 +12,6 @@
                 <th>Name</th>
                 <th>Description</th>
                 <th>Prix</th>
-                <th>CreatedAt</th>
                 <th>actions</th>
             </tr>
         </thead>
@@ -23,7 +22,6 @@
                 <td>{{ produit.name }}</td>
                 <td>{{ produit.description }}</td>
                 <td>{{ produit.prix }}</td>
-                <td>{{ produit.createdAt ? produit.createdAt|date('Y-m-d H:i:s') : '' }}</td>
                 <td>
                     <a href="{{ path('app_produits_show', {'id': produit.id}) }}">show</a>
                     <a href="{{ path('app_produits_edit', {'id': produit.id}) }}">edit</a>

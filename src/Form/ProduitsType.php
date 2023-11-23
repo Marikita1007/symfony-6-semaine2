@@ -19,27 +19,28 @@ class ProduitsType extends AbstractType
     {
         $builder
             ->add('name', TextType::class,[
-                'label' => 'Nom du produits'
+                'label' => 'Product name'
             ])
             ->add('description', TextareaType::class,[
-                'label' => 'Description du produits'
+                'label' => 'product description'
             ])
             ->add('prix', MoneyType::class,[
-                'label' => 'Prix du produits'
+                'label' => 'Product Price'
             ])
             ->add('reference', ReferencesType::class,[
-                'label' => 'Reference du produits'
-            ])
-            ->add('categorie', EntityType::class,[
-                'label' => 'Categorie du produits',
-                'class' => Categories::class,
-                'choice_label' => 'name'
+                'label' => 'Product reference',
             ])
             ->add('distributeur', EntityType::class,[
-                'label' => 'Choix du distributeur',
+                'label' => 'choice of distributor',
                 'class' => Distributeurs::class,
+                'multiple' => true,
                 'choice_label' => 'name',
                 'expanded' => true
+            ])
+            ->add('categorie', EntityType::class,[
+                'label' => 'Product category',
+                'class' => Categories::class,
+                'choice_label' => 'name',
             ])
         ;
     }

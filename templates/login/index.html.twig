@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello LoginController!{% endblock %}
+
+{% block body %}
+
+<div class="example-wrapper">
+    <h1>Connection</h1>
+
+    {% if error %}
+        <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+    {% endif %}
+
+    <form action="{{ path('app_login') }}" method="post">
+        <label for="username">Email:</label>
+        <input class="form-control" type="text" id="username" name="_username" value{{ last_username }}>
+
+        <label for="password">Password:</label>
+        <input class="form-control" type="password" id="password" name="_password">
+
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+        <input type="hidden" name="app_profile" value="/account">
+
+        <button class="btn btn-info mt-3" type="submit">Connection</button>
+
+        <div>Don't have an account yet ?</div>
+        <a href="{{ path('app_register') }}" class="btn btn-outline-primary">Register here</a>
+    </form>
+</div>
+{% endblock %}

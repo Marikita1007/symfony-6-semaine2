@@ -3,14 +3,17 @@
 namespace App\Entity;
 
 use App\Repository\ProduitsRepository;
+use App\Traits\DateTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ProduitsRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Produits
 {
+    use DateTrait;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -25,9 +28,6 @@ class Produits
     #[ORM\Column]
     private ?float $prix = null;
 
-    #[ORM\Column]
-    private ?\DateTimeImmutable $createdAt = null;
-
     #[ORM\OneToOne(inversedBy: 'produits', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?References $reference = null;
@@ -39,10 +39,18 @@ class Produits
     #[ORM\ManyToMany(targetEntity: Distributeurs::class, inversedBy: 'produits')]
     private Collection $distributeur;
 
+
+
     public function __construct()
     {
         $this->distributeur = new ArrayCollection();
-        $this->createdAt = new \DateTimeImmutable();
+//        $this->createdAt = new \DateTimeImmutable();
+    }
+
+    public function __toString()
+    {
+        // Customize this method based on how you want to represent the Produits entity as a string
+        return $this->getName(); // Assuming you have a getName() method in your Produits entity
     }
 
     public function getId(): ?int
@@ -82,18 +90,6 @@ class Produits
     public function setPrix(float $prix): static
     {
         $this->prix = $prix;
-
-        return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTimeImmutable
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
-    {
-        $this->createdAt = $createdAt;
 
         return $this;
     }
