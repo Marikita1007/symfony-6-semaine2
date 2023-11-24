@@ -40,11 +40,13 @@ class Produits
     private Collection $distributeur;
 
 
+    #[ORM\OneToMany(mappedBy: 'produits', targetEntity: Photos::class, cascade: ['persist', 'remove'])]
+    private Collection $photos;
 
     public function __construct()
     {
         $this->distributeur = new ArrayCollection();
-//        $this->createdAt = new \DateTimeImmutable();
+        $this->photos = new ArrayCollection();
     }
 
     public function __toString()
@@ -138,6 +140,36 @@ class Produits
     public function removeDistributeur(Distributeurs $distributeur): static
     {
         $this->distributeur->removeElement($distributeur);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Photos>
+     */
+    public function getPhotos(): Collection
+    {
+        return $this->photos;
+    }
+
+    public function addPhoto(Photos $photo): static
+    {
+        if (!$this->photos->contains($photo)) {
+            $this->photos->add($photo);
+            $photo->setProduits($this);
+        }
+
+        return $this;
+    }
+
+    public function removePhoto(Photos $photo): static
+    {
+        if ($this->photos->removeElement($photo)) {
+            // set the owning side to null (unless already changed)
+            if ($photo->getProduits() === $this) {
+                $photo->setProduits(null);
+            }
+        }
 
         return $this;
     }

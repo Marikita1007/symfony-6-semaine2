@@ -9,6 +9,7 @@
         <thead>
             <tr>
                 <th>Id</th>
+{#                <th>Photo</th>#}
                 <th>Name</th>
                 <th>Description</th>
                 <th>Prix</th>
@@ -19,6 +20,7 @@
         {% for produit in produits %}
             <tr>
                 <td>{{ produit.id }}</td>
+{#                <td>{{ produit.photos }}</td>#}
                 <td>{{ produit.name }}</td>
                 <td>{{ produit.description }}</td>
                 <td>{{ produit.prix }}</td>

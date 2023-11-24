@@ -2,17 +2,20 @@
 
 namespace App\Controller;
 
+use App\Entity\Photos;
 use App\Entity\Produits;
 use App\Form\CategoriesType;
 use App\Form\FilterSearchType;
 use App\Form\ProduitsType;
 use App\Repository\ProduitsRepository;
 use App\Services\MessageService;
+use App\Services\SimpleUploadService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[Route('/produits')]
 class ProduitsController extends AbstractController
@@ -26,13 +29,48 @@ class ProduitsController extends AbstractController
     }
 
     #[Route('/new', name: 'app_produits_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        SluggerInterface $slugger,
+        SimpleUploadService $simpleUploadService,
+    ): Response
     {
         $produit = new Produits();
         $form = $this->createForm(ProduitsType::class, $produit);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            $photos = $request->files->get('produits')['photos'] ?? null;
+//            dd($photos);
+//            $photos = $request->files->all();
+
+            if ($photos == null){
+                $this->addFlash('danger', 'Each product must have at least one photo');
+                return $this->redirectToRoute('app_produits_new');
+            } else {
+//                dd('inside else');
+                $images = $photos['produits']['photos'];
+
+                foreach ($images as $image){
+                    $new_photos = new Photos();
+                    $image_new = $image['name'];
+                    $new_photo = $simpleUploadService->uploadImage($image_new);
+                    $new_photos->setName($new_photo);
+                    $produit->addPhoto($new_photos);
+
+                    //If we want to use slug instead of id, we create a column slug and use it instead of id
+//                    $separator = '-';
+//                    $slug = trim($slugger->slug($form->get('name')->getData(), $separator)->lower());
+//                    $produit->setSlug($slug);
+
+                    // Persist the Photos entity
+                    $entityManager->persist($new_photos);
+                    $entityManager->flush();
+                }
+            }
+
             // Persist the main product entity
             $entityManager->persist($produit);
             $entityManager->flush();
@@ -133,7 +171,6 @@ class ProduitsController extends AbstractController
 
         return $this->render('produits/all_filters.html.twig', [
             'produits' => $produitsRepository->findAll(),
-//            'produits' => $produitsRepository->getByName($word),
             'formFilterSearch' => $formFilterSearch,
             'formCategories' => $formCategories,
         ]);
@@ -161,7 +198,6 @@ class ProduitsController extends AbstractController
     public function showMessage(MessageService $messageService): Response
     {
         $message = $messageService->showMessageService();
-//        $this->container->get->('App\Services\MessageseService');
 
         return $this->render('produits/message_produits.html.twig', [
             'message' => $message,
@@ -191,7 +227,6 @@ class ProduitsController extends AbstractController
     public function detailsProduit(ProduitsRepository $produitsRepository, int $id): Response
     {
         return $this->render('produits/show.html.twig', [
-//            'produit' => $produitsRepository->find($id),
             'produit' => $produitsRepository->findOneBy(['id' => $id], ['price' => 'ASC'])
         ]);
     }

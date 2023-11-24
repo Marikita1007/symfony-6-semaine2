@@ -1,7 +1,28 @@
-{{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn btn-primary">{{ button_label|default('Save') }}</button>
-{{ form_end(form) }}
+{#{{ form_start(form) }}#}
+{#    {{ form_widget(form) }}#}
+{#    <button class="btn btn-primary">{{ button_label|default('Save') }}</button>#}
+{#{{ form_end(form) }}#}
+<div class="container w-50 shadow rounded mx-auto mt-5 p-3">
+    <h1 class="text-center text-warning">Add Products</h1>
+    {{ form_start(form) }}
 
+    {{ form_row(form._token) }}
+    {{ form_row(form.name) }}
+    {{ form_row(form.description) }}
+    {{ form_row(form.prix) }}
+    {{ form_row(form.reference) }}
+    {{ form_row(form.categorie) }}
+    {{ form_row(form.distributeur) }}
+    <button type="button" class="js-btn-add btn btn-success" data-collection="#photos">
+        Add an image
+    </button>
+    <div id="photos"
+         class="list-group mt-3"
+         data-index="{{ form.photos|length > 0 ? form.photos|last.vars.name + 1 : 0 }}"
+         data-prototype="{{ form_widget(form.photos.vars.prototype)|e('html_attr') }}">
 
-
+    </div>
+    <button class="btn btn-primary mt-3">{{ button_label|default('Save') }}</button>
+    {{ form_end(form, {render_rest:false}) }}
+</div>
+<script src="{{ asset('js/images.js') }}" type="application/javascript"></script>

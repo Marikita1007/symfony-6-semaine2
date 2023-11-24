@@ -7,6 +7,7 @@ use App\Entity\Distributeurs;
 use App\Entity\Produits;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -41,6 +42,14 @@ class ProduitsType extends AbstractType
                 'label' => 'Product category',
                 'class' => Categories::class,
                 'choice_label' => 'name',
+            ])
+            ->add('photos', CollectionType::class,[
+                'entry_type' => PhotosType::class,
+                'entry_options' => ['label' => false ],
+                'allow_add' => true,
+                'allow_delete' => true,
+                'by_reference' => false,
+                'mapped' => false
             ])
         ;
     }
