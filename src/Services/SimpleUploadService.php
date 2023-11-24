@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use function Symfony\Component\Translation\t;
 
 class SimpleUploadService
 {
@@ -26,6 +27,23 @@ class SimpleUploadService
         );
 
         return $new_file_name;
+    }
+
+    public function deleteImage(string $file)
+    {
+        $path = $this->param->get('images_directory');
+        $image_object = $path . "/" . $file;
+        $success = false;
+
+        if (file_exists($image_object))
+        {
+            unlink($image_object);
+            $success = true;
+
+            return $success;
+        }
+
+        return false;
     }
 
 }

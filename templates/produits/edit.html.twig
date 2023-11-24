@@ -5,9 +5,43 @@
 {% block body %}
     <h1>Edit Produits</h1>
 
+    <div class="container w-50 shadow rounded mx-auto mt-5 p-3">
+        <h1 class="text-center text-warning">Add Products</h1>
+        {{ form_start(form) }}
+
+        {{ form_row(form._token) }}
+        {{ form_row(form.name) }}
+        {{ form_row(form.description) }}
+        {{ form_row(form.prix) }}
+        {{ form_row(form.reference) }}
+        {{ form_row(form.categorie) }}
+        {{ form_row(form.distributeur) }}
+        <button type="button" class="js-btn-add btn btn-success" data-collection="#photos">
+            Add an image
+        </button>
+        <div id="photos"
+             class="list-group mt-3"
+             data-index="{{ form.photos|length > 0 ? form.photos|last.vars.name + 1 : 0 }}"
+             data-prototype="{{ form_widget(form.photos.vars.prototype)|e('html_attr') }}">
+
+        </div>
+        <button class="btn btn-primary mt-3 mb-3">{{ button_label|default('Update') }}</button>
+        {{ form_end(form, {render_rest:false}) }}
+
+        {% for photo in produit.photos %}
+            <span class="img-container">
+                <img src="{{ asset('img/' ~ photo.name) }}" width="10%" class="img-fluid mx-3" alt="">
+                <a href="{{ path('app_delete_image_produit', {'id': produit.id, 'imageId': photo.id}) }}" class="btn btn-danger">X</a>
+            </span>
+        {% endfor %}
+
+    </div>
+
     {{ include('produits/_form.html.twig', {'button_label': 'Update'}) }}
+
 
     <a href="{{ path('app_produits_index') }}">back to list</a>
 
     {{ include('produits/_delete_form.html.twig') }}
+    <script src="{{ asset('js/images.js') }}" type="application/javascript"></script>
 {% endblock %}

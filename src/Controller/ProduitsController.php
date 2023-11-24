@@ -7,11 +7,14 @@ use App\Entity\Produits;
 use App\Form\CategoriesType;
 use App\Form\FilterSearchType;
 use App\Form\ProduitsType;
+use App\Repository\PhotosRepository;
 use App\Repository\ProduitsRepository;
 use App\Services\MessageService;
 use App\Services\SimpleUploadService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -42,17 +45,16 @@ class ProduitsController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $photos = $request->files->get('produits')['photos'] ?? null;
+//            $photos = $request->files->get('produits')['photos'] ?? null;
 //            dd($photos);
-//            $photos = $request->files->all();
+            $photos = $request->files->all();
 
             if ($photos == null){
                 $this->addFlash('danger', 'Each product must have at least one photo');
                 return $this->redirectToRoute('app_produits_new');
             } else {
-//                dd('inside else');
                 $images = $photos['produits']['photos'];
-
+//                dd($images);
                 foreach ($images as $image){
                     $new_photos = new Photos();
                     $image_new = $image['name'];
@@ -65,9 +67,10 @@ class ProduitsController extends AbstractController
 //                    $slug = trim($slugger->slug($form->get('name')->getData(), $separator)->lower());
 //                    $produit->setSlug($slug);
 
+                    //TODO Maybe I don't need here
                     // Persist the Photos entity
-                    $entityManager->persist($new_photos);
-                    $entityManager->flush();
+//                    $entityManager->persist($new_photos);
+//                    $entityManager->flush();
                 }
             }
 
@@ -177,20 +180,54 @@ class ProduitsController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_produits_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Produits $produit, EntityManagerInterface $entityManager): Response
+    public function edit(
+        Request $request,
+        Produits $produit,
+        EntityManagerInterface $entityManager,
+        SluggerInterface $slugger,
+        EventDispatcherInterface $dispatcher,
+        PhotosRepository $photosRepository,
+        SimpleUploadService $simpleUploadService): Response
     {
         $form = $this->createForm(ProduitsType::class, $produit);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+//            $photos = $request->files->get('produits')['photos'] ?? null;
+            $photos = $request->files->all();
+
+            if ($photos == null){
+                $this->addFlash('danger', 'Each product must have at least one photo');
+                return $this->redirectToRoute('app_produits_edit' , ['id' => $produit->getId()]);
+            } else {
+                $images = $photos['produits']['photos'];
+//                dd($images);
+                foreach ($images as $image){
+                    $new_photos = new Photos();
+                    $image_new = $image['name'];
+                    $new_photo = $simpleUploadService->uploadImage($image_new);
+                    $new_photos->setName($new_photo);
+                    $produit->addPhoto($new_photos);
+
+                    //If we want to use slug instead of id, we create a column slug and use it instead of id
+//                    $separator = '-';
+//                    $slug = trim($slugger->slug($form->get('name')->getData(), $separator)->lower());
+//                    $produit->setSlug($slug);
+                }
+            }
+
+            // Persist the Photos entity
+            $entityManager->persist($produit);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_produits_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_produits_index');
         }
 
         return $this->render('produits/edit.html.twig', [
             'produit' => $produit,
             'form' => $form,
+            'photos' => $photosRepository->findBy(['produits' => $produit])
         ]);
     }
 
@@ -229,5 +266,45 @@ class ProduitsController extends AbstractController
         return $this->render('produits/show.html.twig', [
             'produit' => $produitsRepository->findOneBy(['id' => $id], ['price' => 'ASC'])
         ]);
+    }
+
+    #[Route('/produit/{id}/delete-image/{imageId}', name: 'app_delete_image_produit', methods: ['GET', 'POST'])]
+    public function deleteImageProduit(
+        Produits $produit,
+        EntityManagerInterface $entityManager,
+        int $imageId,
+        PhotosRepository $photosRepository): Response
+    {
+        $photoId = $photosRepository->find($imageId);
+        if ($photoId && $photoId->getProduits() === $produit)
+        {
+            $entityManager->remove($photoId);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Your photo is successfully deleted');
+
+            return $this->redirectToRoute('app_produits_edit', ['id' => $produit->getId()]);
+        } else {
+            $this->addFlash('danger', 'Error happened while deleting the photo ');
+            return $this->redirectToRoute('app.produits');
+        }
+
+//        $data = json_decode($request->getContent(), true);
+//
+//        if($this->isCsrfTokenValid("delete" . $photos->getId(), $data['_token']))
+//        {
+//            $photo_name = $photos->getName();
+//
+//            if($simpleUploadService->deleteImage($photo_name))
+//            {
+//                $entityManager->remove($photos);
+//
+//                $entityManager->flush();
+//
+//                $this->addFlash('success', 'Your photo is successfully deleted');
+//                return new JsonResponse(['success' => 'Your photo is successfully deleted'], 200);
+//            }
+//        }
+//        return new JsonResponse(['error' => 'Invalid Token'], 400);
     }
 }
